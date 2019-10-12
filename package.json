@@ -1,0 +1,29 @@
+{
+  "name": "storyserve",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackect1103/vue-agoni-storyServe.git"
+  },
+  "keywords": [
+    "QWAszx1103"
+  ],
+  "author": "agoni",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jackect1103/vue-agoni-storyServe/issues"
+  },
+  "homepage": "https://github.com/jackect1103/vue-agoni-storyServe#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.17.1",
+    "iconv-lite": "^0.5.0",
+    "mongoose": "^5.7.4",
+    "request": "^2.88.0"
+  }
+}
