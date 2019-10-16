@@ -9,7 +9,7 @@ const cheerio = require('cheerio');
 const iconvLite = require('iconv-lite');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/article', { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/agoniDB', { useUnifiedTopology: true, useNewUrlParser: true });
 
 var articleSchema = new mongoose.Schema({          //json的结构;
     articleyId: String,  //定义一个属性articleyId
@@ -22,7 +22,7 @@ var articleSchema = new mongoose.Schema({          //json的结构;
 });
 
 var articleBg = mongoose.model('article', articleSchema);   //创建model
-const baseUrl = 'http://www.renrenwenxue.com/html/jingpinjiazuo/jingpinduanpian/'
+const baseUrl = 'http://www.renrenwenxue.com/html/jingpinjiazuo/jingdianmingpian/list_84_2.html'
 
 function fetchPage(baseUrl) {     //封装了一层函数
     return new Promise((resolve, reject) => {
@@ -31,9 +31,9 @@ function fetchPage(baseUrl) {     //封装了一层函数
             if (!error && response.statusCode === 200) {
                 var buf = iconvLite.decode(body, 'gbk');
                 var $ = cheerio.load(buf);//采用cheerio模块解析html
-                resolve($);
+                return resolve($);
             }
-            reject(error);
+            return reject(error);
         })
     })
 }
@@ -42,23 +42,28 @@ fetchPage(baseUrl)
     .then(($) => {
         var $date = $('.e2 li');
         var imgUrl = 'http://www.renrenwenxue.com'
-        var articleDb = {
-            title: "",   //定义一个属性articleyId
-            category: "",
-            articleyImg: "",   //定义一个属性articleyId
-            desc: "", //定义一个属性 小说简介
-            content: "",//内容
-            date:''
-        };
+
         var category = ["BookNews", "ChildrensBooks", "activity"];
         $date.each((i, obj) => {
+            var articleDb = {
+                title: "",   //定义一个属性articleyId
+                category: "",
+                articleyImg: "",   //定义一个属性articleyId
+                desc: "", //定义一个属性 小说简介
+                content: "",//内容
+                date: ''//日期
+            };
             articleDb.title = $(obj).children('a.title').text();
             articleDb.category = category[Math.floor(Math.random() * 3)];
             articleDb.articleyImg = imgUrl + $(obj).children('a.preview').find('img').attr('src');
             articleDb.desc = $(obj).children('p.intro').text();
-            articleDb.content = $(obj).children();
-            articleDb.date = $(obj).children('span.info').text();
-            console.log(articleDb.date);
+            articleDb.content = $(obj).children('p.intro').text();
+            articleDb.date = $(obj).children('span.info').text().split(' ')[1].split('：')[1];
+
+            var articleBgDate = new articleBg(articleDb);
+            articleBgDate.save((error) => {
+                console.log(error);
+            })
         })
     }).catch((error) => {
         console.log(error);

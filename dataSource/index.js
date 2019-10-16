@@ -17,7 +17,7 @@ const request = require('request');
 const iconvLite = require('iconv-lite');
 const cheerio = require('cheerio');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/storyBook', { useUnifiedTopology: true, useNewUrlParser: true });      //链接数据库;
+mongoose.connect('mongodb://localhost/agoniDB', { useUnifiedTopology: true, useNewUrlParser: true });      //链接数据库;
 
 var storySchema = new mongoose.Schema({          //json的结构;
     storyId: String,  //定义一个属性storyId
@@ -34,7 +34,7 @@ var storySchema = new mongoose.Schema({          //json的结构;
 var storyBg = mongoose.model('story', storySchema);   //创建model
 const baseUrl = 'https://www.wodeshucheng.com/book_'
 
-var book_id = 31;
+var book_id = 25;
 var maxId = 50;
 
 fetchPage(baseUrl, book_id);           //主程序开始运行
@@ -69,6 +69,9 @@ function startRequest(baseUrl, book_id) {
                     category: '',
                     sex: ''
                 }
+                var categorys = ['Fantasy','urban','knightErrant','literature','passThrough','suspense','history','game'];
+                var gender = ['boy','girl'];
+
                 $storyContent.each(function (i, obj) {
                     story.name = $(obj).children('div.articleTitle').find('h2').text();
                     story.author = $(obj).children('div.articleTitle').find('span').text().split(' ')[0];
@@ -77,8 +80,7 @@ function startRequest(baseUrl, book_id) {
                     story.clickRaid = $(obj).children('div.words').find('span').eq(2).text().split(' ')[2];
                     story.desc = $(obj).children('p').text();
                 });
-                var categorys = ['Fantasy','urban','knightErrant','literature','passThrough','suspense','history','game'];
-                var gender = ['boy','girl'];
+                
                 story.category = categorys[Math.floor((Math.random()*10)-1)];
                 story.sex = gender[Math.floor((Math.random()*2))];
                 // console.log(story);
@@ -87,10 +89,10 @@ function startRequest(baseUrl, book_id) {
                     if (err) {
                         console.log(err);
                     }
+                    console.log('success');
                 });
                 book_id++;
                 fetchPage(baseUrl, book_id);
-
 
             } catch (err) {
                 console.log(err)
